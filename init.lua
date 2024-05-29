@@ -29,6 +29,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup {
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'nvim-lua/plenary.nvim',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -360,6 +361,8 @@ require('lazy').setup {
         cssls = {},
         eslint = {},
         html = {},
+        rust_analyzer = {},
+        jsonls = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -599,7 +602,7 @@ require('lazy').setup {
 
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'html', 'css', 'lua', 'markdown', 'vim', 'vimdoc', 'javascript', 'typescript' },
+        ensure_installed = { 'rust', 'bash', 'c', 'html', 'css', 'lua', 'markdown', 'vim', 'vimdoc', 'javascript', 'typescript' },
         -- Autoinstall languages that are not installed
         auto_install = true,
         highlight = { enable = true },
@@ -620,12 +623,18 @@ require('lazy').setup {
   },
   {
     'theprimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
-      local mark = require 'harpoon.mark'
-      local ui = require 'harpoon.ui'
+      local harpoon = require 'harpoon'
+      harpoon:setup()
 
-      vim.keymap.set('n', '<leader>a', mark.add_file)
-      vim.keymap.set('n', '<leader>e', ui.toggle_quick_menu)
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():add()
+      end)
+      vim.keymap.set('n', '<leader>e', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end)
     end,
   },
 
